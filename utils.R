@@ -1,14 +1,13 @@
 ## simple version of GuanRank (https://www.nature.com/articles/s43588-021-00083-2) 
-## the code here is similar to the code found in https://github.com/GuanLab/GuanRank-R but
-## it makes use of survival::survfit for computing survival probability for simplicity
+## the code here is similar to the code found in https://github.com/GuanLab/GuanRank-R
+## but makes use of survival::survfit for computing survival probability for simplicity
 
-# surv_data input should have two columns, the first column is time, the second is an indicater with 0 = censored, 1 = event
-# this code is a simplified version of code from https://github.com/GuanLab/GuanRank-R
-calc_guanRank <- function(surv_data){
+# surv_data input should have two columns, the first column is time, the second is an indicator with 0 = censored, 1 = event
+calculate_guan_rank <- function(surv_data){
   surv_data           <- data.frame(time = surv_data[,1],status = surv_data[,2], id = 1:nrow(surv_data))
   tData               <- na.omit(surv_data); 
   tData               <- tData[order(tData[,"time"]),] # reorder to facilitate calculation below
-
+  
   #compute survival probabilities by time
   km_fit              <- survival::survfit(survival::Surv(tData$time, tData$status)~1)
   tKM                 <- data.frame(time = km_fit$time, surv_prob = km_fit$surv)
@@ -47,7 +46,17 @@ calc_guanRank <- function(surv_data){
   km_rank_mat[,"guan_rank"] <- km_rank_mat[,"guan_rank"]-0.5 # 0.5 is the correction for self-comparison
   km_rank_mat[,"guan_rank"] <- km_rank_mat[,"guan_rank"]/max(km_rank_mat[,"guan_rank"]) # normalization to [0,1]
   
-  gRank                <- dplyr::left_join(surv_data, km_rank_mat[,c(3,5)], by="id", keep=F)
+  gRank                <- dplyr::left_join(surv_data, km_rank_mat[,c(3,5)], by="id", keep=F) # mapping back to the order of the input data
   return(gRank[,-3]) # return without dummy id
 }
+
+#### example
+# luad     <- UCSCXenaTools::getTCGAdata(project = "LUAD", clinical = TRUE, download = TRUE)
+# clin     <- data.table::fread(luad$destfiles, data.table=F)
+
+# survData <- data.frame(time = clin$days_to_last_followup, status = rep(0,nrow(clin)))
+# survData$time[is.na(clin$days_to_last_followup)] <- clin$days_to_death[is.na(clin$days_to_last_followup)]
+# survData$status[clin$vital_status == "DECEASED"] <- 1
+
+# gr <- calculate_guan_rank(surv_data = survData)
 
