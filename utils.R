@@ -4,8 +4,8 @@
 
 # surv_data input should have two columns, the first column is time, the second is an indicator with 0 = censored, 1 = event
 calculate_guan_rank <- function(surv_data){
-  surv_data           <- data.frame(time = surv_data[,1],status = surv_data[,2], id = 1:nrow(surv_data))
-  tData               <- na.omit(surv_data); 
+  surv_data           <- data.frame(time = surv_data[,1],status = surv_data[,2], id = 1:nrow(surv_data)) # adding dummy id to enable mapping back to orignal order
+  tData               <- na.omit(surv_data); # removing NA's since survfit will break with them
   tData               <- tData[order(tData[,"time"]),] # reorder to facilitate calculation below
   
   #compute survival probabilities by time
