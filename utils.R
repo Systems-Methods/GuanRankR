@@ -51,12 +51,26 @@ calculate_guan_rank <- function(surv_data){
 }
 
 #### example
-# luad     <- UCSCXenaTools::getTCGAdata(project = "LUAD", clinical = TRUE, download = TRUE)
-# clin     <- data.table::fread(luad$destfiles, data.table=F)
+ IND      <- "LUAD"
+ dat      <- UCSCXenaTools::getTCGAdata(project = IND, clinical = TRUE, download = TRUE)
+ clin     <- data.table::fread(dat$destfiles, data.table=F)
 
-# survData <- data.frame(time = clin$days_to_last_followup, status = rep(0,nrow(clin)))
-# survData$time[is.na(clin$days_to_last_followup)] <- clin$days_to_death[is.na(clin$days_to_last_followup)]
-# survData$status[clin$vital_status == "DECEASED"] <- 1
+ survData <- data.frame(time = as.numeric(clin$days_to_last_followup), status = rep(0,nrow(clin)))
+ survData$time[is.na(clin$days_to_last_followup)] <- as.numeric(clin$days_to_death[is.na(clin$days_to_last_followup)])
+ survData$status[clin$vital_status == "DECEASED"] <- 1
 
-# gr <- calculate_guan_rank(surv_data = survData)
+ gr <- calculate_guan_rank(surv_data = survData)
+ 
+ 
+Col <- rep("slategrey",nrow(gr))
+Col[gr$status==1] <- "cyan"
+
+pdf(paste0("/mnt/results/tcga_",IND,"_guanrank_example.pdf"),height = 10, width = 10)
+par(mfrow = c(2,2))
+plot(survival::survfit(survival::Surv(gr$time, gr$status)~1),xlab="Days", ylab="Survival %",conf.int=F, mark.time = T, col = "slategrey", cex=.5, main = IND)
+plot(gr$time,gr$guan_rank, pch =19, col = Col, cex = .5, xlab = "Days", ylab = "Guan Rank", main = "Guan Rank vs Time")
+boxplot(gr$guan_rank~gr$status,xlab = "Status", ylab="Guan Rank", main = "Guan Rank vs Status")
+hist(gr$guan_rank,30, xlab="Guan Rank", main="Guan Rank Distribution")
+dev.off()
+
 
