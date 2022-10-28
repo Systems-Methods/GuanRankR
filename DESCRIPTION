@@ -1,0 +1,25 @@
+Package: GuanRankR
+Title: An R Package for computing Guan Rank
+Version: 1.0.0
+Authors@R: c(
+    person("Mike", "Mason", , "mike.mason@bms.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5652-7739")),
+    person("Jimmy", "Fulp", , "william.fulp@bms.com", role = "aut",
+           comment = c(ORCID = "0000-0001-6888-0794"))
+  )
+Description: An R Package for computing Guan Rank, which transforms survival data in to an easy to model ranking.
+License: MIT + file LICENSE
+URL: https://github.com/Systems-Methods/GuanRankR
+BugReports: https://github.com/Systems-Methods/GuanRankR/issues
+Depends: 
+    R (>= 3.5.0)
+Imports: 
+    dplyr,
+    survival
+Suggests:
+    data.table,
+    UCSCXenaTools
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1

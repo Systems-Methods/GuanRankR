@@ -1,73 +1,81 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  eval = FALSE
+)
+```
+
 
 # GuanRankR
 
 <!-- badges: start -->
-
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
+
 
 ## Overview
 
-An R Package for computing [Guan
-Rank](https://web.cse.ohio-state.edu/~zhang.10631/files/survival_2021.pdf),
+An R Package for computing [Guan Rank](https://web.cse.ohio-state.edu/~zhang.10631/files/survival_2021.pdf), 
 which transforms survival data in to an easy to model ranking
 
-The method was used in many of [Prof. Yuanfang
-Guan’s](https://medicine.umich.edu/dept/dcmb/yuanfang-guan-phd) top
-performing [DREAM Challenge
-models](https://www.synapse.org/#!Synapse:syn6180942/wiki/401735)
+The method was used in many of [Prof. Yuanfang Guan's](https://medicine.umich.edu/dept/dcmb/yuanfang-guan-phd) top performing 
+[DREAM Challenge models](https://www.synapse.org/#!Synapse:syn6180942/wiki/401735)
 
 ## Installation
 
+
 Install the released version of GuanRankR from Github:
 
-``` r
+```{r}
 remotes::install_github(repo = "Systems-Methods/GuanRankR")
 ```
 
 Or:
 
-``` r
+```{r}
 remotes::install_git(
   'https://github.com/Systems-Methods/GuanRankR.git'
 )
 ```
 
+
 Or install the development version
 
-``` r
+```{r}
 remotes::install_github(repo = "Systems-Methods/GuanRankR", 
                         ref = "develop")
+
 ```
+
 
 ## Example
 
 ### Example Data
 
-First we can use the
-[{UCSCXenaTools}](https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html)
+First we can use the [{UCSCXenaTools}](https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html) 
 package to download an example mRNASeq dataset.
 
-``` r
+```{r, eval = TRUE}
 dat <- UCSCXenaTools::getTCGAdata(project = "LUAD", 
                                   clinical = TRUE, 
                                   download = TRUE,
                                   quiet = TRUE)
-#> This will check url status, please be patient.
-#> All downloaded files will under directory /var/folders/f8/kyzn816j4pn7wwt6kb95xg1w0000gn/T//Rtmp8mPBUY.
-#> The 'trans_slash' option is FALSE, keep same directory structure as Xena.
-#> Creating directories for datasets...
-#> Downloading TCGA.LUAD.sampleMap/LUAD_clinicalMatrix
 
 clin <- data.table::fread(dat$destfiles, data.table = FALSE)
 ```
 
 ### Create Survival Data and Run Ranks
 
-``` r
+```{r, eval = TRUE}
 
 survData <- data.frame(
   time = ifelse(!is.na(clin$days_to_last_followup),
@@ -79,11 +87,14 @@ survData <- data.frame(
 )
 
 gr <- GuanRankR::calculate_guan_rank(surv_data = survData)
+
+
 ```
 
 ### Plotting Results
 
-``` r
+
+```{r, eval = TRUE}
 Col <- as.vector(factor(gr$status, labels = c('slategrey', 'cyan')))
 par(mfrow = c(2,2))
 plot(survival::survfit(survival::Surv(gr$time, gr$status)~1), xlab = "Days",
@@ -95,13 +106,10 @@ boxplot(gr$guan_rank ~ gr$status, xlab = "Status", ylab = "Guan Rank",
         main = "Guan Rank vs Status")
 hist(gr$guan_rank, breaks = 30, xlab = "Guan Rank",
      main = "Guan Rank Distribution")
+
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## Code of Conduct
-
-Please note that the GuanRankR project is released with a [Contributor
-Code of
-Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
+  
+Please note that the GuanRankR project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
