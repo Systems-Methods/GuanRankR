@@ -2,8 +2,8 @@ pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-11-08T16:42Z
+last_built: 2022-11-08T16:48Z
 urls:
-  reference: https://systems-methods.github.io/GuanRankR/index.html/reference
-  article: https://systems-methods.github.io/GuanRankR/index.html/articles
+  reference: https://systems-methods.github.io/GuanRankR/reference
+  article: https://systems-methods.github.io/GuanRankR/articles
 
